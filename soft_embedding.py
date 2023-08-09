@@ -38,7 +38,7 @@ class SoftEmbedding(nn.Module):
         """
         if initialize_from_vocab:
             return self.wte.weight[:n_tokens].clone().detach()
-        return torch.FloatTensor(n_tokens, wte.weight.size(1)).uniform_(-random_range, random_range)
+        return torch.FloatTensor(n_tokens, wte.weight.size(1)).uniform_(-random_range, random_range)  # [n_tokens, emb_dim]
             
     def forward(self, tokens):
         """run forward pass
@@ -50,5 +50,5 @@ class SoftEmbedding(nn.Module):
             torch.float: encoding of text concatenated with learned task specifc embedding
         """
         input_embedding = self.wte(tokens[:, self.n_tokens:])
-        learned_embedding = self.learned_embedding.repeat(input_embedding.size(0), 1, 1)
-        return torch.cat([learned_embedding, input_embedding], 1)
+        learned_embedding = self.learned_embedding.repeat(input_embedding.size(0), 1, 1)  # [batch_size, n_tokens, emb_dim]
+        return torch.cat([learned_embedding, input_embedding], 1)  # [batch_size, n_tokens+seq_len, emb_dim]
